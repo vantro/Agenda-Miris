@@ -92,8 +92,10 @@ def main(argv):
 					heurefin = row[7]
 					groupes = row[8]
 					intitule_occur = row[9]
+					salle = row[10]
 
-					data =(matricule,code_ue, dte, heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb )
+
+					data =(matricule,code_ue, dte, heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb, salle )
 					synapse.append(data)
 					#ZoomUtils.InsertSynapseS(conn, data)
 					
@@ -101,8 +103,8 @@ def main(argv):
 			print(f'{line_count} enregistrements traités.')
 
 		# Inject le contenu du fichier CSV dans la table
-		sql =''' INSERT INTO cours_simple (matricule, code_ue, "date", heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb)
-		 VALUES (?,?,?,?,?,?,?,?,?,?)'''
+		sql =''' INSERT INTO cours_simple (matricule, code_ue, "date", heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb, salle)
+		 VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
 
 		try:
 			cur = conn.cursor()
@@ -163,6 +165,7 @@ def main(argv):
 											  intitule_occur text,
 											  intervenants text,
 											  webinar integer DEFAULT 0,
+											  salle text,                                              
 											  UNIQUE (code_ue, "date", heuredeb, heurefin, groupes,intitule,intitule_occur,intervenants)
 											);'''
 	ZoomUtils.create_table(conn,sql_create_table_agenda)
@@ -173,8 +176,8 @@ def main(argv):
 	cur.execute(sql)
 	val = cur.fetchone()
 	if val[0] == 0 or forced:
-		sql = ''' INSERT INTO agenda (code_ue, "date", heuredeb, heurefin,intitule, intitule_occur, groupes, intervenants)
-					select distinct code_ue, "date", heuredeb, heurefin, intitule, intitule_occur, lower(groupes) as groupes, intervenants from cours_simple; '''
+		sql = ''' INSERT INTO agenda (code_ue, "date", heuredeb, heurefin,intitule, intitule_occur, groupes, intervenants, salle)
+					select distinct code_ue, "date", heuredeb, heurefin, intitule, intitule_occur, lower(groupes) as groupes, intervenants, salle from cours_simple; '''
 		try:
 			print('Insertion Agenda 1')
 			cur = conn.cursor()
