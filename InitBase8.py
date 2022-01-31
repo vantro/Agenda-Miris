@@ -26,7 +26,7 @@ def main(argv):
 	TEAL = '\033[96m'
 	DEFAULT = '\033[0m'
 	# créer la base de données dans le dossier du CSV
-	database = r'SynapseS_tempo_amphi'+ datetime.strftime(datetime.now(),"%Y%m%d")+'.db'
+	database = r'SynapseS_tempo_'+ datetime.strftime(datetime.now(),"%Y%m%d")+'.db'
 	# Chercher le chemin du CSV et Concatener path . BDD
 	database = os.path.join(os.path.dirname(os.path.abspath(import_file)),database)
 
@@ -80,7 +80,7 @@ def main(argv):
 					line_count += 1
 				else:
 					if len(row) != 11:
-						print(f"Nombre de champs invalide ({row}/10) - Erreur ligne: {line_count}")
+						print(f"Nombre de champs invalide ({row}/11) - Erreur ligne: {line_count}")
 					#on importe le fichier
 					matricule = row[0]
 					code_ue = row[1]
@@ -94,8 +94,7 @@ def main(argv):
 					intitule_occur = row[9]
 					salle = row[10]
 
-
-					data =(matricule,code_ue, dte, heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb, salle )
+					data =(matricule,code_ue, dte, heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb,salle )
 					synapse.append(data)
 					#ZoomUtils.InsertSynapseS(conn, data)
 					
@@ -103,7 +102,7 @@ def main(argv):
 			print(f'{line_count} enregistrements traités.')
 
 		# Inject le contenu du fichier CSV dans la table
-		sql =''' INSERT INTO cours_simple (matricule, code_ue, "date", heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb, salle)
+		sql =''' INSERT INTO cours_simple (matricule, code_ue, "date", heuredeb, heurefin, groupes, intitule, intitule_occur, intervenants, email_interv_etb,salle)
 		 VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
 
 		try:
@@ -165,7 +164,7 @@ def main(argv):
 											  intitule_occur text,
 											  intervenants text,
 											  webinar integer DEFAULT 0,
-											  salle text,                                              
+											  salle text,
 											  UNIQUE (code_ue, "date", heuredeb, heurefin, groupes,intitule,intitule_occur,intervenants)
 											);'''
 	ZoomUtils.create_table(conn,sql_create_table_agenda)
@@ -577,7 +576,7 @@ if __name__ == '__main__':
 
 	folder = "Extraction_"+str(datetime.now().year)+str(datetime.now().isocalendar()[1]) # dump_YearWeeknumber
 	savepath = os.path.join(localdir, folder)
-	savedfilepath = os.path.join(savepath, "export.csv")
+	savedfilepath = os.path.join(savepath, "export_salles.csv")
 	if os.path.exists(savedfilepath) and len(sys.argv) < 2:
 		main([f'{os.path.relpath(savedfilepath)}'])
 
